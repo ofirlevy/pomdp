@@ -14,44 +14,57 @@ class Decoder(object):
     def Decode(self, action, reward, transProb):
         
         trellis = np.zeros((action.shape[0], self.N, action.shape[1]))
-        backpt = np.ones((action.shape[0], action.shape[1]), 'int32') * -1
-                
-        # initialization
-        trellis[:,:, 0] = np.zeros(self.N)
+        backpt = np.ones(trellis.shape, 'int32') * -1
+        tokens = np.ones(action.shape, 'int32') * -1
+
+        # initialization at t=0 we are at the highest state        
         trellis[:,self.N-1, 0] = 1
         
         
-        for i in xrange(1, action.shape[0]):
+        for i in xrange(0, action.shape[0]):
             for t in xrange(1, action.shape[1]):
                 
                 if (reward[i,t]<action[i,t]):
+                    # Failure state
                     # the current and previous states are well known in this case
+                    
                     # update current state to be fail
                     trellis[i,:,t] = np.zeros(self.N)
                     trellis[i,0,t] = 1.0
-                    backpt[i, t] = 0 
                     # update previous state according to the reward
-                    trellis[i,:, t-1] = np.zeros(self.N)
-                    if (reward[i,t] > 0):
-                        trellis[i, reward[i,t]+1, t-1] = 1.0
-                    else:
-                        trellis[i,0, t-1] = 0.5
-                        trellis[i,1, t-1] = 0.5
+                    # assume that it already was in failure state if reward=0. TODO - can we assume that?
+                    backpt[i,:, t] = 0
+                    if reward[i,t] > 0: backpt[i,0, t] = reward[i,t]+1                    
                 else:
-                    trellis[i,:, t] = transProb[action[i,t]].dot(trellis[i,:, t-1])
-                    backpt[i, t] = ( transProb[action[i,t]].dot(trellis[i,:, t-1]) ).argmax(0)
+                    # (bb*transProb[action[i,t]]).max(1)
+                    # bb is trellis[i,:, t-1]
+                    bb = np.array([ 0.,  0.,  0.,  0.,  0.,  0.3,  0.,  0.,  0.,  0.,  0.5,  0.5])
+                    (bb*transProb[action[i,t]]).max(1)
+                    xx = (np.tile(bb, [self.N,1]) * transProb[action[i,t]]).argmax(0)
+                    #trellis[i,:, t] = transProb[action[i,t]].dot(trellis[i,:, t-1])     # max 0 is the biggest from each col.
+                    #backpt[i, t] = ( transProb[action[i,t]].dot(trellis[i,:, t-1]) ).argmax(0)                    
+                    
+                    trellis[i,:, t] = (trellis[i,:, t-1]*transProb[action[i,t]]).max(1)                    
+                    #backpt[i,:,t] = (np.tile(trellis[i,:, t-1], [self.N,1]) * transProb[action[i,t]]).argmax(1)
+                    # use random choice in order to avoid that first element is always selected
+                    backpt[i,:,t] = (np.tile(trellis[i,:, t-1], [self.N,1]) * transProb[action[i,t]]).argmax(1)
                 #print 'at time t=%d' %t
                 #print 'state: ', state[i,t]
                 #print 'action: ', action[i,t]
                 #print 'trellis: ', trellis[i,:,t]
-                #print 'backpt: ', backpt[i,t]
-
-            # termination
-            tokens = [trellis[i,:, -1].argmax()]
-            for j in xrange(action.shape[1]-1, 0, -1):
-                tokens.append(backpt[i, j])      
+                #print 'backpt: ', backpt[i,t]           
             
-        backpt[:,0] =  self.N-1 # first state was missed
-        #backpt = backpt -1   # represent state from -1 to N
-        #tokens.append(self.N-1) # first state was missed                    
-        return backpt    #np.array(tokens[::-1], 'int32' )
+            # termination
+            tokens[i,0] = trellis[i,:, -1].argmax()
+            
+            for j in xrange(1, backpt.shape[2]):
+                tokens[i,j] = backpt[i,tokens[i,j-1],-(j+1)]
+        
+        
+        # reverse to get the state in the forward direction
+        tokens = np.flip(tokens, 1)        
+        # shift by 1
+        tokens = np.roll(tokens,-1)
+        return tokens
+                
+            
