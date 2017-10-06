@@ -47,9 +47,9 @@ def generate_single_seq(c,p,T,p_rest):
         else:
             # action time
             # draw action value, normal dist around previous state
-            mu, sigma = 0, 3
-            #action[t] = int(np.random.normal(mu, sigma, 1) + (state[t-1]-1))
-            action[t] = np.random.randint(11, size=1)
+            mu, sigma = 0, 7
+            action[t] = int(np.random.normal(mu, sigma, 1) + (state[t-1]-1))
+            #action[t] = np.random.randint(11, size=1)            
             action[t] = min(action[t], c)
             action[t] = max(action[t], 0)
         

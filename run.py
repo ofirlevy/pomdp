@@ -3,6 +3,11 @@ from expectation import *
 from data_utils import *
 import numpy as np
 import pickle
+import matplotlib.pyplot as plt
+
+
+np.set_printoptions(suppress=True, linewidth=240)
+np.set_printoptions(formatter={'float': '{: 0.3g}'.format})
 
 
 # definitions
@@ -14,9 +19,11 @@ N = c + 2
 # probability to go one state up for a single rest action
 # p = [Pf, P0, P1, ....Pc-1]
 #real_p = np.array([0.4,0.5,0.5,0.6,0.6,0.7,0.7,0.8,0.8,0.9,0.99,0.0]) # the last element is meaningless
-real_p = np.array([0.99,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.1,0.0]) # the last element is meaningless
-#real_p = np.array([0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.0]) 
-p_rest = 0.8
+real_p = np.array([0.99,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.15,0.1,0.0]) # the last element is meaningless
+#real_p = np.array([0.2,0.3,0.4,0.5,0.6,0.6,0.7,0.8,0.85,0.9,0.95,0.0])
+
+
+p_rest = 0.9
 
 
 seq_num = 100  # number of sequences
@@ -43,7 +50,7 @@ viterbi = my_viterbi.Decoder(N)
 #pickle.dump(seq,fileObject)   
 #fileObject.close()
 
-fileObject = open("data_rep",'r')
+fileObject = open("data_graph",'r')
 seq = pickle.load(fileObject)
 (action, reward, state) = seq
 
@@ -52,7 +59,9 @@ seq = pickle.load(fileObject)
 #p = np.array([0.8,0.8,0.8,0.8,0.8,0.3,0.3,0.3,0.3,0.3,0.3,0.0])   # np.ones(real_p.shape) * 0.9 # np.random.random(real_p.shape)
 #p = np.array([0.3,0.4,0.5,0.6,0.5,0.4,0.3,0.2,0.1,0.2,0.3,0.0])   # np.ones(real_p.shape) * 0.9 # np.random.random(real_p.shape)
 #p = np.array([0.3,0.8,0.3,0.8,0.3,0.8,0.3,0.8,0.3,0.8,0.3,0.0])   # np.ones(real_p.shape) * 0.9 # np.random.random(real_p.shape)
-p = np.array([0.6,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5])   # np.ones(real_p.shape) * 0.9 # np.random.random(real_p.shape)
+#p = np.array([0.6,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5])   # np.ones(real_p.shape) * 0.9 # np.random.random(real_p.shape)
+#p = np.array([0.51,0.53,0.55,0.57,0.59,0.61,0.63,0.65,0.67,0.7,0.75,0.85])   # np.ones(real_p.shape) * 0.9 # np.random.random(real_p.shape)
+p = real_p # np.random.random(real_p.shape)
 
 print ' we start with:'
 print p
@@ -73,9 +82,29 @@ for i in xrange (1000):
 
     print i
     print p-real_p
-    print np.mean(p-real_p)
+    print np.mean(abs(p-real_p))
     #print p
     #print new_state[25]-1
+    
+    if (False):
+        
+        plt.figure(1)
+        plt.subplot(211)
+        plt.plot(new_state[13,50:150]-1)
+        plt.plot(state[13,50:150], 'r--')
+        
+        
+        plt.subplot(212)
+        plt.plot(action[13,50:150])    
+        plt.plot(reward[13,50:150])        
+        plt.show()        
+        
+        
+        
+        
+        
+        
+        
 
 print 'done'
 

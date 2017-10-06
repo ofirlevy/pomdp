@@ -36,15 +36,15 @@ class Decoder(object):
                     backpt[i,:, t] = 0
                     if reward[i,t] > 0: backpt[i,0, t] = reward[i,t]+1                    
                 else:
-                    # (bb*transProb[action[i,t]]).max(1)
-                    # bb is trellis[i,:, t-1]
-                    bb = np.array([ 0.,  0.,  0.,  0.,  0.,  0.3,  0.,  0.,  0.,  0.,  0.5,  0.5])
-                    (bb*transProb[action[i,t]]).max(1)
-                    xx = (np.tile(bb, [self.N,1]) * transProb[action[i,t]]).argmax(0)
+                    # old
                     #trellis[i,:, t] = transProb[action[i,t]].dot(trellis[i,:, t-1])     # max 0 is the biggest from each col.
                     #backpt[i, t] = ( transProb[action[i,t]].dot(trellis[i,:, t-1]) ).argmax(0)                    
                     
-                    trellis[i,:, t] = (trellis[i,:, t-1]*transProb[action[i,t]]).max(1)                    
+                    # NEW
+                    #bb = np.expand_dims(trellis[i,:, t-1], axis=0)
+                    #transProb[action[i,t]].dot(bb.T)
+                    
+                    trellis[i,:, t] = (trellis[i,:, t-1]*transProb[action[i,t]]).max(1)
                     #backpt[i,:,t] = (np.tile(trellis[i,:, t-1], [self.N,1]) * transProb[action[i,t]]).argmax(1)
                     # use random choice in order to avoid that first element is always selected
                     backpt[i,:,t] = (np.tile(trellis[i,:, t-1], [self.N,1]) * transProb[action[i,t]]).argmax(1)

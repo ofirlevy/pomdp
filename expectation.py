@@ -14,7 +14,7 @@ def estimate_prob(action, state, N):
     # TODO - replace with np.count_nonzero(np.logical_and(state[i]==3 , action[i]==0))                    
     prob = cnt_up/cnt_all
     #prob[cnt_all == 0] = 1 # np.random.random()
-    prob[prob < 0.1] = 0.1
+    #prob[prob < 0.1] = 0.1
     return prob
 
     
