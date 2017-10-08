@@ -6,6 +6,7 @@ import pickle
 import matplotlib.pyplot as plt
 
 
+
 np.set_printoptions(suppress=True, linewidth=240)
 np.set_printoptions(formatter={'float': '{: 0.3g}'.format})
 
@@ -19,18 +20,20 @@ N = c + 2
 # probability to go one state up for a single rest action
 # p = [Pf, P0, P1, ....Pc-1]
 #real_p = np.array([0.4,0.5,0.5,0.6,0.6,0.7,0.7,0.8,0.8,0.9,0.99,0.0]) # the last element is meaningless
-real_p = np.array([0.99,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.15,0.1,0.0]) # the last element is meaningless
+real_p = np.array([0.99,0.99,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.15,0.1,0.0]) # the last element is meaningless
 #real_p = np.array([0.2,0.3,0.4,0.5,0.6,0.6,0.7,0.8,0.85,0.9,0.95,0.0])
 
 
-p_rest = 0.9
 
 
 seq_num = 100  # number of sequences
 T = 200  # length of each sequence
 
+p_rest = np.random.uniform(0.5,0.99, seq_num)
 
 # # # 
+
+
 
 # states is a [-1, 0, 1, 2, ..., 10]. size is 10
 # initialize to zeros execpt last element
@@ -43,16 +46,19 @@ viterbi = my_viterbi.Decoder(N)
 
 
 # generate award/reward sequence
-#(action, reward, state) = generate_seq(seq_num,c,real_p,T,p_rest)
+(action, reward, state) = generate_seq(seq_num,c,real_p,T,p_rest)
 
 #seq = (action, reward, state)
 #fileObject = open("data",'wb') 
 #pickle.dump(seq,fileObject)   
 #fileObject.close()
 
-fileObject = open("data_graph",'r')
-seq = pickle.load(fileObject)
-(action, reward, state) = seq
+#fileObject = open("data_graph",'r')
+#seq = pickle.load(fileObject)
+#(action, reward, state) = seq
+
+
+#est_p = stat_p(action,reward, state)
 
 
 # randomize initial p

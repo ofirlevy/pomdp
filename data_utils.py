@@ -67,7 +67,7 @@ def generate_seq(seq_num, c,p,T,p_rest):
     reward_seq = np.empty([seq_num,T], dtype=np.int)
     
     for i in xrange(0,seq_num):
-        (x, y, z) = generate_single_seq(c,p,T,p_rest)
+        (x, y, z) = generate_single_seq(c,p,T,p_rest[i])
         action_seq[i] = x
         reward_seq[i] = y
         state_seq[i] = z
