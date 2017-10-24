@@ -6,8 +6,6 @@ from data_utils import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-
 np.set_printoptions(suppress=True, linewidth=240)
 np.set_printoptions(formatter={'float': '{: 0.3g}'.format})
 
@@ -68,14 +66,5 @@ print np.abs(state_cnt-real_p)
 
 print zero_state_cnt
 print one_state_cnt
-
-plt.figure(1)
-plt.subplot(211)    
-plt.plot(state[0])
-
-plt.subplot(212)
-plt.plot(action[0])    
-plt.plot(reward[0])        
-plt.show()        
 
 print 'done'

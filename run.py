@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 
 
 np.set_printoptions(suppress=True, linewidth=240)
-np.set_printoptions(formatter={'float': '{: 0.3g}'.format})
+#np.set_printoptions(formatter={'float': '{: 0.3g}'.format})
+np.set_printoptions(formatter={'float': '{: 0.2g}'.format})
 
 
 # definitions
@@ -24,12 +25,10 @@ real_p = np.array([0.99,0.99,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.15,0.1,0.0]) # the la
 #real_p = np.array([0.2,0.3,0.4,0.5,0.6,0.6,0.7,0.8,0.85,0.9,0.95,0.0])
 
 
-
-
 seq_num = 100  # number of sequences
 T = 200  # length of each sequence
 
-p_rest = np.random.uniform(0.5,0.99, seq_num)
+p_rest = np.random.uniform(0.2,0.8, seq_num)
 
 # # # 
 
@@ -87,12 +86,15 @@ for i in xrange (1000):
     p = estimate_prob(action, new_state, N)
 
     print i
-    print p-real_p
-    print np.mean(abs(p-real_p))
+    #print p-real_p
+    #print np.mean(abs(p-real_p))
     #print p
     #print new_state[25]-1
+    print real_p
+    print p
     
-    if (False):
+    
+    if (i==14):
         
         plt.figure(1)
         plt.subplot(211)
@@ -101,9 +103,9 @@ for i in xrange (1000):
         
         
         plt.subplot(212)
-        plt.plot(action[13,50:150])    
-        plt.plot(reward[13,50:150])        
-        plt.show()        
+        plt.plot(action[13,50:150])
+        plt.plot(reward[13,50:150])
+        plt.show()
         
         
         

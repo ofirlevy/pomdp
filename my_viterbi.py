@@ -32,9 +32,11 @@ class Decoder(object):
                     trellis[i,:,t] = np.zeros(self.N)
                     trellis[i,0,t] = 1.0
                     # update previous state according to the reward
-                    # assume that it already was in failure state if reward=0. TODO - can we assume that?
-                    backpt[i,:, t] = 0
-                    if reward[i,t] > 0: backpt[i,0, t] = reward[i,t]+1                    
+                    # if reward=0 take the most probable between 0 and F states
+                    if (reward[i,t] == 0):
+                        backpt[i,:, t] = trellis[i,0:2,t-1].argmax()
+                    else:
+                        backpt[i,0, t] = reward[i,t]+1
                 else:
                     # old
                     #trellis[i,:, t] = transProb[action[i,t]].dot(trellis[i,:, t-1])     # max 0 is the biggest from each col.
@@ -65,6 +67,6 @@ class Decoder(object):
         tokens = np.flip(tokens, 1)        
         # shift by 1
         tokens = np.roll(tokens,-1)
-        return tokens
+        return (tokens, trellis, backpt)
                 
             

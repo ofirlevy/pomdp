@@ -20,6 +20,48 @@ def get_trans_mat(c, p):
     
     return trans
 
+def get_emis_mat(numstates, vocabsize):
+    
+    emis = np.zeros((vocabsize, numstates, vocabsize))    
+    emis[:,0:2,0] = 1.0    
+    for vocab_num in range(vocabsize):
+        for i in range(2,numstates):
+            idx = min(i-1,vocab_num)
+            emis[vocab_num,i,idx] = 1.0
+            
+   
+    ## example: emission probablities for action = 0, c=3
+    #emis[0] = np.array([ \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[1.0, 0.0, 0.0, 0.0]])
+    
+    #emis[1] = np.array([ \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[0.0, 1.0, 0.0, 0.0], \
+        #[0.0, 1.0, 0.0, 0.0], \
+        #[0.0, 1.0, 0.0, 0.0]])
+
+    #emis[2] = np.array([ \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[0.0, 1.0, 0.0, 0.0], \
+        #[0.0, 0.0, 1.0, 0.0], \
+        #[0.0, 0.0, 1.0, 0.0]])
+
+    #emis[3] = np.array([ \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[1.0, 0.0, 0.0, 0.0], \
+        #[0.0, 1.0, 0.0, 0.0], \
+        #[0.0, 0.0, 1.0, 0.0], \
+        #[0.0, 0.0, 0.0, 1.0]])
+
+    return emis
+
+
 
 # TODO make a class
 # generate action/reward/state sequence 
@@ -48,8 +90,8 @@ def generate_single_seq(c,p,T,p_rest):
             # action time
             # draw action value, normal dist around previous state
             mu, sigma = 0, 7
-            action[t] = int(np.random.normal(mu, sigma, 1) + (state[t-1]-1))
-            #action[t] = np.random.randint(11, size=1)            
+            #action[t] = int(np.random.normal(mu, sigma, 1) + (state[t-1]-1))
+            action[t] = np.random.randint(c+1, size=1)
             action[t] = min(action[t], c)
             action[t] = max(action[t], 0)
         
