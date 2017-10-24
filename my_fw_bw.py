@@ -125,7 +125,7 @@ def maximization(observations, gamma, xi, numstates, vocabsize, action):
 
 ##########
 # testing forward/backward
-def test_forwardbackward(numiter,num_of_seqs):
+def run_forwardbackward(numiter,num_of_seqs):
     
     # capacity
     c = 10
@@ -189,27 +189,36 @@ def test_forwardbackward(numiter,num_of_seqs):
         
         trans[0] = np.mean(calc_trans,axis=0)
         
-    
-        if (iteration%10 == 0):
-            
-            # get p to print
-            p_debug = np.zeros(trans.shape[0])
-            for i in range(trans.shape[0]):
-                p_debug[i] = trans[0,i+1,i]
-            
-            print iteration
-            print("P:")
-            print(p_debug)
-            print("\n")
-
-            print("average diff:")
-            print(np.mean(abs(p_debug-real_p[:-1])))
+    # return the estimated probability    
+    p_debug = np.zeros(trans.shape[0])
+    for i in range(trans.shape[0]):
+        p_debug[i] = trans[0,i+1,i]
+                
+    return real_p, p_debug
             
 
 
 def main():
-    # display some lines
-    test_forwardbackward(numiter = 30,num_of_seqs = 500)
+    
+    # testing sequence 5 trys for each number of sequence
+    num_of_seqs = np.array([2,5,10,25,50,100,150,200,300])
+    numiter = 30
+    out_diff = np.zeros((num_of_seqs.shape[0],5))
+    
+    for seq_num in range(num_of_seqs.shape[0]):
+        for take_num in range(5):
+        # display some lines
+            real_p, p_est = run_forwardbackward(numiter, num_of_seqs[seq_num])
+            print('number of sequences:')
+            print(num_of_seqs[seq_num])
+            print(p_est)
+            print(np.mean(abs(p_est-real_p[:-1])))
+            out_diff[seq_num,take_num] = np.mean(abs(p_est-real_p[:-1]))
+    
+    fileObject = open("out",'wb') 
+    pickle.dump(out_diff,fileObject)   
+    fileObject.close()
+    
     
     
 if __name__ == "__main__": main()
